@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.primecredit.tool.common.domain.DiarizationSpeech;
-import com.primecredit.tool.common.util.WavFileHandler;
+import com.primecredit.tool.common.util.FileUtils;
 import com.primecredit.tool.common.wsobject.request.DiarizationRequest;
-import com.primecredit.tool.common.wsobject.request.TestRequest;
 import com.primecredit.tool.common.wsobject.response.DiarizationResponse;
-import com.primecredit.tool.common.wsobject.response.TestResponse;
 import com.primecredit.tool.speakeridentification.services.SpeakerIdentificationService;
 
 @RestController
@@ -39,36 +37,25 @@ public class SpeakerIdentificationController {
 		response.setClientMachineId(request.getClientMachineId());
 		response.setMillisecond(new Date().getTime());
 		
-		WavFileHandler wavFileHandler = WavFileHandler.getInstance();
-		
 		StringBuilder sbTempFileName = new StringBuilder();
 		sbTempFileName.append(request.getClientMachineId() .replaceAll("[^\\p{Alpha}\\p{Digit}]+",""));
 		sbTempFileName.append("_");
 		sbTempFileName.append(request.getMillisecond());
 		sbTempFileName.append(".wav");
 		
-		File sourceFile = wavFileHandler.generateFile(tempPath, sbTempFileName.toString(), request.getFileData());
 		try {
+			File sourceFile = FileUtils.generateFile(tempPath, sbTempFileName.toString(), request.getFileData());
 			List<DiarizationSpeech> dsList = speakerIdentificationService.diarization(sourceFile);
 			response.setDsList(dsList);
+			sourceFile.delete();
 		} catch (Exception e) {
 			logger.error(e.toString());
 			//e.printStackTrace();
 		}
 		
-		sourceFile.delete();
+		
 		return response;
 
 	}
 
-	@RequestMapping(value = "/test", method = RequestMethod.POST)
-	public TestResponse test(@RequestBody TestRequest request) {
-		TestResponse response = new TestResponse();
-		response.setName("Response: " + request.getName());
-		for (String val : request.getValues()) {
-			response.getValues().add("Response Item: " + val);
-		}
-
-		return response;
-	}
 }

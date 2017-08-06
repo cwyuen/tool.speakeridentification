@@ -1,11 +1,15 @@
 package com.primecredit.tool.speakeridentification.services;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.primecredit.tool.common.domain.DiarizationSpeech;
@@ -17,16 +21,29 @@ import edu.cmu.sphinx.speakerid.SpeakerIdentification;
 @Service
 public class SpeakerIdentificationService {
 	
-	public List<DiarizationSpeech> diarization(String sourceFileName) throws Exception {
+	private static Logger logger = LoggerFactory.getLogger(SpeakerIdentificationService.class);
+	
+	public List<DiarizationSpeech> diarization(String sourceFileName) {
 		return diarization(new File(sourceFileName));
 	}
 	
-	public List<DiarizationSpeech> diarization(File sourceFile) throws Exception {
+	public List<DiarizationSpeech> diarization(File sourceFile) {
 		SpeakerIdentification sd = new SpeakerIdentification();
-		URL url = sourceFile.toURI().toURL();
-		ArrayList<SpeakerCluster> clusters = sd.cluster(url.openStream());
-		List<DiarizationSpeech> dsList = calculateSpeakerIntervals(clusters, sourceFile.getName());
-		return dsList;
+		URL url;
+		try {
+			url = sourceFile.toURI().toURL();
+			ArrayList<SpeakerCluster> clusters = sd.cluster(url.openStream());
+			List<DiarizationSpeech> dsList = calculateSpeakerIntervals(clusters, sourceFile.getName());
+			return dsList;
+		} catch (MalformedURLException e) {
+			logger.error("MalformedURLException (Method - public List<DiarizationSpeech> diarization(File sourceFile))");
+			logger.error(e.getMessage());				
+		} catch (IOException e) {
+			logger.error("IOException (Method - public List<DiarizationSpeech> diarization(File sourceFile))");
+			logger.error(e.getMessage());		
+		}
+		
+		return null;
 	}
 	
 	private List<DiarizationSpeech> calculateSpeakerIntervals(ArrayList<SpeakerCluster> speakers, String fileName) {
