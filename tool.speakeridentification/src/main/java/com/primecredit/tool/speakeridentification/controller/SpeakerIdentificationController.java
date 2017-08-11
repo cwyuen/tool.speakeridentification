@@ -17,16 +17,20 @@ import com.primecredit.tool.common.domain.DiarizationSpeech;
 import com.primecredit.tool.common.util.FileUtils;
 import com.primecredit.tool.common.wsobject.request.DiarizationRequest;
 import com.primecredit.tool.common.wsobject.response.DiarizationResponse;
-import com.primecredit.tool.speakeridentification.services.SpeakerIdentificationService;
+import com.primecredit.tool.speakeridentification.services.LiumSpeakerIdentificationService;
+import com.primecredit.tool.speakeridentification.services.SphinxSpeakerIdentificationService;
 
 @RestController
 @RequestMapping("/SpeakerIdentification")
 public class SpeakerIdentificationController {
 
-	private static Logger logger = LoggerFactory.getLogger(SpeakerIdentificationService.class);
+	private static Logger logger = LoggerFactory.getLogger(SphinxSpeakerIdentificationService.class);
 	
 	@Autowired
-	private SpeakerIdentificationService speakerIdentificationService;
+	private SphinxSpeakerIdentificationService speakerIdentificationService;
+	
+	@Autowired
+	private LiumSpeakerIdentificationService liumSpeakerIdentificationService;
 	
 	@Value("${temp.path}")
 	private String tempPath;
@@ -45,7 +49,8 @@ public class SpeakerIdentificationController {
 		
 		try {
 			File sourceFile = FileUtils.generateFile(tempPath, sbTempFileName.toString(), request.getFileData());
-			List<DiarizationSpeech> dsList = speakerIdentificationService.diarization(sourceFile);
+			//List<DiarizationSpeech> dsList = speakerIdentificationService.diarization(sourceFile);
+			List<DiarizationSpeech> dsList = liumSpeakerIdentificationService.diarization(sourceFile);
 			response.setDsList(dsList);
 			sourceFile.delete();
 		} catch (Exception e) {

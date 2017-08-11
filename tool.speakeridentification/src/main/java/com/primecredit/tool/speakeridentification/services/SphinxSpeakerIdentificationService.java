@@ -19,9 +19,9 @@ import edu.cmu.sphinx.speakerid.SpeakerCluster;
 import edu.cmu.sphinx.speakerid.SpeakerIdentification;
 
 @Service
-public class SpeakerIdentificationService {
+public class SphinxSpeakerIdentificationService {
 	
-	private static Logger logger = LoggerFactory.getLogger(SpeakerIdentificationService.class);
+	private static Logger logger = LoggerFactory.getLogger(SphinxSpeakerIdentificationService.class);
 	
 	public List<DiarizationSpeech> diarization(String sourceFileName) {
 		return diarization(new File(sourceFileName));
