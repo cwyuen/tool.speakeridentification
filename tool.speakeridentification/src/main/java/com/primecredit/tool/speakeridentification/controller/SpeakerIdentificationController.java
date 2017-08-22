@@ -26,8 +26,8 @@ public class SpeakerIdentificationController {
 
 	private static Logger logger = LoggerFactory.getLogger(SphinxSpeakerIdentificationService.class);
 	
-	@Autowired
-	private SphinxSpeakerIdentificationService speakerIdentificationService;
+	//@Autowired
+	//private SphinxSpeakerIdentificationService speakerIdentificationService;
 	
 	@Autowired
 	private LiumSpeakerIdentificationService liumSpeakerIdentificationService;
